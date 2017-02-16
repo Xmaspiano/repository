@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="/static/weui/weui.min.css"/>
     <link rel="stylesheet" href="/static/weui/example.css"/>
 
-    <script src="/static/bootstrap3/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
 </head>
 <body onload="<c:if test="${error}">toolShow('${error}')</c:if>">
 <div class="weui-toptips weui-toptips_warn js_tooltips">${error}</div>
@@ -62,11 +62,9 @@
 </body>
 <script type="text/javascript" class="input js_show">
     $(function(){
-//        var $tooltips = $('.js_tooltips');
         $("input.weui-input[name=username]").focus();
 
         $("#showTooltips").on('click',function(){
-//            $("#form1").submit();
             $.ajax({
                 type: "POST",
                 url: "/login",

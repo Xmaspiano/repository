@@ -29,9 +29,6 @@
         <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
     </div>
     <form id="hrmrform">
-        <%--<div class="weui-search-bar">--%>
-        <%--&nbsp;--%>
-        <%--</div>--%>
         <div id="cell_detial" class="weui-cells_radio fix-scroll" style="overflow-y: scroll;">
             <div class="weui-loadmore">
                 <i class="weui-loading"></i>
@@ -121,9 +118,7 @@
                     objArray[i] = checkVO;
                 }
                 pencil_addToUser(objArray);
-//                applyAjax();
             }
-//            test_checkTempPage();
             history.go(-1);
         });
 

@@ -8,14 +8,13 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <%--<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">--%>
 
     <link rel="stylesheet" href="/static/Font-Awesome-3.2.1/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/weui/weui.min.css"/>
     <link rel="stylesheet" href="/static/weui/example.css"/>
 
-    <script src="/static/bootstrap3/js/jquery-1.11.1.min.js"></script>
-    <script src="/static/bootstrap3/js/jquery.form-3.51.0.js"></script>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/jquery.form-3.51.0.js"></script>
     <script src="/static/weui/exif.js"></script>
 </head>
 <style>
@@ -82,7 +81,6 @@
     </div>
 </div>
 <div id="dialogs">
-    <!--BEGIN dialog2-->
     <div class="js_dialog" id="iosDialog" style="opacity: 1; display: none;">
         <div class="weui-mask"></div>
         <div class="weui-dialog">
@@ -92,7 +90,6 @@
             </div>
         </div>
     </div>
-    <!--END dialog2-->
 </div>
 <div class="weui-gallery" id="gallery">
     <span class="weui-gallery__img" id="galleryImg"></span>
@@ -116,70 +113,26 @@
         <p class="weui-toast__content">数据加载中</p>
     </div>
 </div>
-<%--<div id="tabPage" style="display: none">--%>
-<%--<div class="page weui-tab__panel js_show" id="pencil" data-src="/pencil">--%>
 
-<%--</div>--%>
-<%--<div class="page weui-tab__panel js_show" id="bell" data-src="/bell">--%>
-
-<%--</div>--%>
-<%--<div class="page weui-tab__panel js_show" id="search" data-src="/search">--%>
-
-<%--</div>--%>
-<%--</div>--%>
 </body>
 <script src="static/js/common.js"></script>
 <script type="text/javascript" class="tabbar js_show">
     $(window).load(function() {
         var $tooltips = $('.js_tooltips');
 
-//        $("div.tabpage").children("div").each(function(){
-//            getPage($(this).data('src'),this);
-//        });
-
-//        targetShow("#tab01");
         //根据URL切换首次显示页面
-//        var firstshow = $("#firstshow").val();
-//        firstshow == ""?"#tab01":firstshow;
-        targetShow("#tab01");
-
-//        var name = window.location.href.split("#")[1];
-//        if(name == 'tab01' || name=='tab02' ||name == 'tab03' || name == 'tab04'){
-//            $("a.weui-tabbar__item[data-target=#"+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-//            getPage($("#"+name).data('src'),$("#"+name));
-//            targetShow("#"+name);
-//        }else{
-//            showTab(firstshow);
-//        }
+        changePage();
 
         $(window).on('hashchange', function () {
             var state = history.state || {};
-            var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
-            if(name == '#tab01' || name=='#tab02' ||name == '#tab03' || name == '#tab04'){
-                $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-                if($(name).html().trim() == "") {
-                    getPage($(name).data('src'), $(name));
-                }
-                targetShow(name);
-            }else if(name == '#'){
-                targetShow("#tab01");
-            }
+            changePage();
         });
 
         $('.weui-tabbar').on('click','.weui-tabbar__item[data-target]', function () {
             if($($(this)).data("target") == "_back"){
                 window.location.href = "/";
-//                window.history.go(-1);
                 return false;
             }
-
-//            if(!$(this).is('.weui-bar__item_on')) {
-//                $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-////                if($($(this).data('target')).html().trim() == ""){
-//                getPage($($(this).data('target')).data('src'),$($(this).data('target')));
-////                }
-//                targetShow($(this).data('target'));//无加载切换
-//            }
 
             window.location.href = window.location.href.split("#")[0]+$(this).data('target');
         });
@@ -242,9 +195,7 @@
 
     function showTab(firstshow){
         $(".weui-tabbar__item[data-target='#"+firstshow+"']").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-//        if($("#" + firstshow).html().trim() == "") {
-            getPage($("#" + firstshow).data('src'), "#" + firstshow);
-//        }
+        getPage($("#" + firstshow).data('src'), "#" + firstshow);
         targetShow("#"+firstshow);
         badget();
     }
@@ -266,14 +217,12 @@
                     $tab03_badge.hide();
                 }else {
                     $tab03_badge.html(msg.sizeMsg);
-//                    $tab03_badge.show();
                 }
 
                 if(msg.sizeAse == 0){
                     $tab02_badge.hide();
                 }else {
                     $tab02_badge.html(msg.sizeAse);
-//                    $tab02_badge.show();
                 }
 
             },
@@ -282,5 +231,28 @@
             }
         });
     }
+
+    function changePage(){
+        var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
+        if(name == '#tab01' || name=='#tab02' ||name == '#tab03' || name == '#tab04'){
+            $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+            if($(name).html().trim() == "") {
+                getPage($(name).data('src'), $(name));
+            }
+            targetShow(name);
+        }else if(name == '#'){
+            targetShow("#tab01");
+        }
+    }
+
+    //照片上传提示
+    function alertDialog(msg){
+        $('div.weui-dialog__bd').html(msg);
+        $('#iosDialog').fadeIn(200);
+    }
+
+    $('#dialogs').on('click', '.weui-dialog__btn', function(){
+        $(this).parents('.js_dialog').fadeOut(200);
+    });
 </script>
 </html>

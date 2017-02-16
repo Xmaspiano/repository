@@ -13,3 +13,10 @@ function main_checkTempPage(selecter){
         $(this).toggle();
     });
 }
+
+function ReplaceAll(str, sptr, sptr1){
+    while (str.indexOf(sptr) >= 0){
+        str = str.replace(sptr, sptr1);
+    }
+    return str;
+}

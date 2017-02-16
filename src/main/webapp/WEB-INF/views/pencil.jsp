@@ -7,9 +7,6 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--<link rel="stylesheet" href="/static/weui/example.css"/>--%>
-<%-- 图片数据工具 --%>
-<%--<script src="/static/weui/exif.js"></script>--%>
 <meta name="viewport" content="width=device-width">
 <style>
     /* 表单行颜色 */
@@ -44,6 +41,9 @@
                     <div class="weui-cell__bd">
                         <input class="weui-input" id="bt" name="bt" type="text" placeholder="请输标题" value="${pencilPage.bt}">
                     </div>
+                    <div class="weui-cell__ft" for="bt">
+
+                    </div>
                 </div>
                 <div class="weui-cell weui-cell_select weui-cell_select-after">
                     <div class="weui-cell__hd">
@@ -59,12 +59,11 @@
                 </div>
             </div>
 
-            <%--<div class="weui-cells__title">问题描述</div>--%>
             <div class="weui-cells">
-                <div class="weui-cell">
+                <div class="weui-cell weui-cell-warn">
                     <div class="weui-cell__bd">
                         <textarea class="weui-textarea" id="wtms" name="wtms" placeholder="请输入问题描述" rows="3">${pencilPage.wtms}</textarea>
-                        <div class="weui-textarea-counter"><span>
+                        <div class="weui-textarea-counter" for="wtms"><span>
                             <c:choose><c:when  test="${pencilPage != null}">${pencilPage.wtms.length()}</c:when><c:otherwise>0</c:otherwise></c:choose>
                         </span>/200</div>
                     </div>
@@ -78,7 +77,7 @@
                                 <i class='user-group' data-id='${pencilTouser.touser}' >${pencilTouser.lastname}</i>&nbsp;
                             </c:forEach>
                         </div>
-                        <div class="weui-textarea-counter"><a class="icon-group" href="javascript:loadHrm();" style="color: #007dbc"></a></div>
+                        <div class="weui-textarea-counter" for="touser"><a class="icon-group" href="javascript:loadHrm();" style="color: #007dbc"></a></div>
                         <input type="hidden" id="touser" name="touser" value="${pencilPage.touser}"/>
                     </div>
                 </div>
@@ -98,7 +97,6 @@
                                 <div class="weui-uploader__bd">
                                     <ul class="weui-uploader__files" id="uploaderFiles" name="uploaderInputs" style="margin-bottom: 0px;">
                                         <c:forEach items="${pencilImgs}" var="pencilImg">
-                                            <%--<li class="weui-uploader__file" style="background-image:url('/pencilimg/getImg?id=${pencilImg.id}');transform:rotate(${pencilImg.rotate}deg)"></li>--%>
                                             <li class="weui-uploader__file" style="background-image:url('${pencilImg.getStrImgdata()}');transform:rotate(${pencilImg.rotate}deg)"
                                                 data-url="${pencilImg.getStrImgdata()}" data-rotate="${pencilImg.rotate}"
                                             ></li>
@@ -127,23 +125,35 @@
 
     </div>
 </div>
-<%--<div id="pencil-TempPage" style="display: none;height: inherit">--%>
-<%--</div>--%>
 <script type="text/javascript" class="input js_show">
     var photoNum = <c:choose><c:when  test="${pencilPage != null}">${pencilImgs.size()}</c:when><c:otherwise>0</c:otherwise></c:choose>;//当前照片上传个数
     var totalPhotoNum = 2;
     var isOne = true;
 
-    //        $(function(){
-    $(window).ready(function() {
-        $("div.weui-uploader__info").html((photoNum)+"/"+totalPhotoNum);
+    $(function(){
+        //微信图片上传插件
+        var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#);transform:rotate(#num#)" id="pencil-temp"></li>',
+                warn = '<i class="weui-icon-warn"></i>',
+                $pencil_showpage = $("#pencil-showpage"),
+                $pencil_temp_pg = $("#pencil-temp_pg"),
+                $pencil_form = $("#pencil-form"),
+                $gallery = $(window).find("#gallery"),
+                $galleryImg = $(window).find("#galleryImg"),
+                $uploaderInput = $pencil_form.find("#uploaderInput"),
+                $uploaderFiles = $pencil_form.find("#uploaderFiles"),
+                $li_temp = $pencil_form.find("pencil-temp"),
+                $form_jjcd = $pencil_form.find("#jjcd"),
+                $form_btn_apply = $pencil_form.find("#apply"),
+                $tempPage = $pencil_form.find("#tempPage"),
+                $bt = $pencil_form.find("#bt"),
+                $wtms = $pencil_form.find("#wtms")
+                ;
 
-//        targetShow("#pencil-showpage","div.pencil");//主菜单面切换后默认到菜单主页面
+        $pencil_form.find("div.weui-uploader__info").html((photoNum)+"/"+totalPhotoNum);
 
         showMain();
 
         $(window).on('hashchange', function () {
-            var state = history.state || {};
             var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
             if(name == '#hrm'){
                 test_loadPageTemp('/hrmr.jsp');
@@ -152,18 +162,19 @@
             }
         });
 
-        //微信图片上传插件
-        var tmpl = '<li class="weui-uploader__file" style="background-image:url(#url#);transform:rotate(#num#)" id="temp"></li>',
-                $gallery = $("#gallery"), $galleryImg = $("#galleryImg"),
-                $uploaderInput = $("#uploaderInput"),
-                $uploaderFiles = $("#uploaderFiles")
-                ;
-
         $uploaderInput.on("click", function(){
-            photoNum =  parseInt($("div.weui-uploader__info").html().replace("/"+totalPhotoNum,""));
+            photoNum =  parseInt($pencil_form.find("div.weui-uploader__info").html().replace("/"+totalPhotoNum,""));
             if(photoNum >= totalPhotoNum) {
                 alertDialog("只能上传"+totalPhotoNum+"长照片...");
                 return false;
+            }
+        });
+
+        $wtms.on('keyup',function(){
+            if($wtms.val().length <= 200) {
+                $pencil_form.find("div.weui-textarea-counter[for='wtms']").html("<span>"+$wtms.val().length+"/200</span>");
+            }else{
+                $wtms.val($wtms.val().substring(0,200));
             }
         });
 
@@ -191,14 +202,12 @@
                     }
 
                     if (url) {
-//                        src = url.createObjectURL(this);
                         var reader = new FileReader();
                         reader.readAsDataURL(this);
                         reader.onload = function() {
                             fnCompressImg(this.result, 800, 800, function (data) {
                                 $uploaderFiles.append($(tmpl.replace('#num#', _rotate + "deg").replace('#url#', data)));
 
-//                                var imagedata = encodeURIComponent(data);
                                 var dataId;
                                 $.post("/pencilimg/uploadImgDate",
                                         {
@@ -206,9 +215,8 @@
                                             rotate:_rotate
                                         },
                                         function(data,status){
-//                                            alert("Data: " + data.ImageId + "\nStatus: " + status);
-                                            $("#imgfileid").append('<input id="'+data.ImageId+'" type="checkbox" name="ImageDataId" checked value="'+data.ImageId+'">');
-                                            $("#temp").attr("id", data.ImageId);
+                                            $pencil_form.find("#imgfileid").append('<input id="'+data.ImageId+'" type="checkbox" name="ImageDataId" checked value="'+data.ImageId+'">');
+                                            $li_temp.attr("id", data.ImageId);
                                         });
                             });
                         }
@@ -217,13 +225,12 @@
                         $uploaderFiles.append($(tmpl.replace('#num#', _rotate + "deg").replace('#url#', src)));
                     }
 
-//                    $uploaderFiles.append($(tmpl.replace('#num#', _rotate + "deg").replace('#url#', src)));
-                    $("div.weui-uploader__info").html((++photoNum) + "/"+totalPhotoNum);
+                    $pencil_form.find("div.weui-uploader__info").html((++photoNum) + "/"+totalPhotoNum);
                 });
             }
         });
 
-        $("#jjcd").on("change",function(){
+        $form_jjcd.on("change",function(){
             var clsColor = function () {
                 switch ($("#jjcd").val()) {
                     case "1":
@@ -237,21 +244,20 @@
                 }
             }
 
-            $("#jjcd").parent(".weui-cell__hd").removeClass("color-01");
-            $("#jjcd").parent(".weui-cell__hd").removeClass("color-02");
-            $("#jjcd").parent(".weui-cell__hd").removeClass("color-03");
-            $("#jjcd").parent(".weui-cell__hd").addClass(clsColor);
+            $(this).parent(".weui-cell__hd").removeClass("color-01");
+            $(this).parent(".weui-cell__hd").removeClass("color-02");
+            $(this).parent(".weui-cell__hd").removeClass("color-03");
+            $(this).parent(".weui-cell__hd").addClass(clsColor);
         });
 
         $uploaderFiles.on("click", "li", function(){
             $galleryImg.attr("style", this.getAttribute("style"));
-//            alert($("#gallery").find("a.weui-gallery__del").html());
-            $("#gallery").find("a.weui-gallery__del").html(
+            $gallery.find("a.weui-gallery__del").html(
                     <c:choose><c:when  test="${pencilPage == null}">
-                        "<i class=\"weui-icon-delete weui-icon_gallery-delete\"></i>"
-                    </c:when><c:otherwise>
-                        "<i class=\"icon-reply icon-2x\" style=\"color: white\"></i>"
-                    </c:otherwise></c:choose>
+                    "<i class=\"weui-icon-delete weui-icon_gallery-delete\"></i>"
+            </c:when><c:otherwise>
+            "<i class=\"icon-reply icon-2x\" style=\"color: white\"></i>"
+            </c:otherwise></c:choose>
             );
             $gallery.fadeIn(200);
         });
@@ -261,7 +267,7 @@
         });
 
         $gallery.on("click","a.weui-gallery__del", function(){
-            var showImg = $("#galleryImg").css("background-image");
+            var showImg = $galleryImg.css("background-image");
             $("li.weui-uploader__file").each(function(){
                 if($(this).css("background-image") == showImg){
                     $(this).remove();
@@ -271,103 +277,89 @@
             $gallery.fadeOut(200);
         });
 
-        $("#apply").on('click',function(){
+        $form_btn_apply.on('click',function(){
             applyAjax();
         });
 
+        function showMain(){
+            $pencil_showpage.children("div.page").each(function(){
+                $(this).hide();
+            });
+            $pencil_showpage.children("div.pencil").show();
+        }
+
+        //加载tempPage1页面
+        function test_loadPageTemp(url){
+            if($pencil_temp_pg.data("src") != url) {//后续 需更新,问题, 主页面切换后,勾选项失效
+                $pencil_temp_pg.empty();
+                getPage(url, "#pencil-temp_pg");
+                $pencil_temp_pg.data("src", url);
+                $pencil_temp_pg.attr("data-src", url);
+
+                //引入后替换显示
+                var $changePage = $tempPage.children("div").addClass('slideIn').hide();
+                $pencil_form.find("div.tabpage").append($changePage);
+            }
+            test_checkTempPage("#pencil-showpage");
+        }
+
+        //切换tempPage1页面
+        function test_checkTempPage(){
+            main_checkTempPage("#pencil-showpage");
+        }
+
+        function applyAjax(){
+
+            if($bt.val() == ""){
+                $("div.weui-cell__ft[for='bt']").html($(warn));
+                return false;
+            }else{
+                $("div.weui-cell__ft[for='bt']").html("");
+            }
+
+            if($("#pencil-form").find("#touser").val() == ""){
+//                alertDialog("请选择通知人后提交...");
+//                return false;
+            }
+
+            //异步提交表单
+            loadingToast();//loading...
+
+            var submitURL = "/pencil/save";
+
+            $pencil_form.ajaxSubmit({
+                type:'post',
+                url:submitURL,
+                success:function(data){
+                    loadingToast_close();
+                    toast();
+                },
+                error:function(XmlHttpRequest,textStatus,errorThrown){
+                    loadingToast_close();
+                    alertDialog("Connection error");
+                }
+            });
+        }
     });
 
-    function pencil_addToUser(inval){
-        if(inval.length >0) {
-            var tousers = "";
-            $("#showUser").empty();
-            for (var i = 0; i < inval.length; i++) {
-                $("#showUser").append("<i class='user-group' data-id='" + inval[i].id + "' >" + inval[i].lastname + "</i>&nbsp;");
-                tousers += inval[i].id + ",";
-            }
-            $("#touser").val(tousers.substring(0, tousers.length - 1));
-        }
-    }
-
-    function showMain(){
-        $("#pencil-showpage").children().each(function(){
-            $(this).hide();
-        });
-        $("#pencil-showpage").children("div.pencil").show();
-    }
 
     function loadHrm(){
         window.location.href = window.location.href.split("#")[0]+"#hrm";
-//        test_loadPageTemp('/hrmr.jsp');
     }
 
-    //加载tempPage1页面
-    function test_loadPageTemp(url){
-        if($("#pencil-temp_pg").data("src") != url) {//后续 需更新,问题, 主页面切换后,勾选项失效
-            $("#pencil-temp_pg").empty();
-            getPage(url, "#pencil-temp_pg");
-            $("#pencil-temp_pg").data("src", url);
-            $("#pencil-temp_pg").attr("data-src", url);
+    function pencil_addToUser(inval){
+        if(inval.length >0) {
+            var $showUser = $("#pencil-form").find("#showUser"),
+                    $touser = $("#pencil-form").find("#touser");
 
-            //引入后替换显示
-            var $changePage = $("#tempPage").children("div").addClass('slideIn').hide();
-            $("div.tabpage").append($changePage);
-        }
-        test_checkTempPage("#pencil-showpage");
-//        window.location.href = window.location.href.split("#")[0]+"#hrm";
-    }
-
-    //切换tempPage1页面
-    function test_checkTempPage(){
-        main_checkTempPage("#pencil-showpage");
-    }
-
-    function applyAjax(){
-        //异步提交表单
-//                console.log($(this));
-        loadingToast();//loading...
-
-        var submitURL = "/pencil/save";
-//            if($("ul.weui-uploader__files").children().length > 0){
-//                submitURL = "/pencil/saveandfile";
-//            }
-
-        $("#pencil-form").ajaxSubmit({
-            type:'post',
-            url:submitURL,
-            success:function(data){
-//                    alertDialog("Connection success");
-                loadingToast_close();
-                toast();
-            },
-            error:function(XmlHttpRequest,textStatus,errorThrown){
-                loadingToast_close();
-                alertDialog("Connection error");
+            var tousers = "";
+            $showUser.empty();
+            for (var i = 0; i < inval.length; i++) {
+                $showUser.append("<i class='user-group' data-id='" + inval[i].id + "' >" + inval[i].lastname + "</i>&nbsp;");
+                tousers += inval[i].id + ",";
             }
-        });
-
-//            $.ajax({
-//                type: "POST",
-//                url: "/pencil/save",
-//                data: $("#pencil-form").serialize(),
-//                beforeSend: function(){
-//                    loadingToast();
-//                },
-//                success: function(msg){
-////                    if(msg=="success"){
-//                        loadingToast_close();
-//                        toast();
-////                    }
-////                    else {
-////                        loadingToast_close();
-////                        alertDialog("Connection error");
-////                    }
-//                },
-//                error:function(XmlHttpRequest,textStatus,errorThrown){
-//                    loadingToast_close();
-//                    alertDialog("Connection error");
-//                }
-//            });
+            $touser.val(tousers.substring(0, tousers.length - 1));
+        }
     }
 </script>
 <script>

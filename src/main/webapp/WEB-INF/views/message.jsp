@@ -10,14 +10,10 @@
 <style>
     .fix-scroll {
         height: calc(100vh - 200px);
-        /*margin-top: 44px;*/
     }
 </style>
 <div id="message-showpage">
     <div class="message container"><!-- 菜单主显示页面 class必须与页面id一致-->
-        <%--<div class="weui-cells__title">处理意见</div>--%>
-
-        <%--<div class="weui-search-bar" id="searchBar" style="overflow-y: hidden;">--%>
         <form id="message-form" role="form">
             <input type="hidden" name="pencilid" value="${pencilid}">
             <div class="weui-cells">
@@ -31,11 +27,14 @@
                 </div>
             </div>
         </form>
-        <%--</div>--%>
 
         <article class="weui-article">
-            <%--<h2 class="page__title" style="text-align:center;">留言板</h2>--%>
             <div id="cell_detial" class="weui-cells_radio fix-scroll" style="overflow-y: scroll">
+                <c:if test="${messagesList.size()==0}">
+                    <section>
+                    <i class="page__desc">还没有留言</i>
+                    </section>
+                </c:if>
                 <c:forEach items="${messagesList}" var="message">
                     <section>
                         <i class="page__desc">${message.createdate}</i>
@@ -49,17 +48,21 @@
 <br>
 <script>
     $(function(){
-        $("#message_submit").on('click',function(){
+        var $message_submit=$("#message_submit"),
+                $message_delete=$("#message_delete"),
+                $message_form=$("#message-form"),
+                $message_id=$("#message_id");
+
+        $message_submit.on('click',function(){
             $.ajax({
                 type: "POST",
                 url: "/message/save",
-                data: $("#message-form").serialize(),
+                data: $message_form.serialize(),
                 beforeSend: function(){
                     loadingToast();
                 },
                 success: function(msg){
                     loadingToast_close();
-//                    toolShow(msg);
                     showTab("tab03");
                 },
                 error:function(XmlHttpRequest,textStatus,errorThrown){
@@ -69,19 +72,18 @@
             });
         });
 
-        $("#message_delete").on('click',function(){
+        $message_delete.on('click',function(){
             $.ajax({
                 type: "POST",
                 url: "/message/delete",
                 data: {
-                    id:$("#message_id").val()
+                    id:$message_id.val()
                 },
                 beforeSend: function(){
                     loadingToast();
                 },
                 success: function(msg){
                     loadingToast_close();
-//                    toolShow(msg);
                     showTab("tab03");
                 },
                 error:function(XmlHttpRequest,textStatus,errorThrown){

@@ -101,6 +101,10 @@ public class BellController {
             bells = new PageImpl(new ArrayList<BellPage>());
         }
 
+        for(BellPage bellPage:bells) {
+            System.out.println(bellPage.getTouser());
+        }
+
         mp.put("detail", bells);
         mp.put("bellSize",getSizeByTouser());
         return mp;

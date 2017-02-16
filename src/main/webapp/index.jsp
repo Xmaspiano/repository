@@ -5,16 +5,14 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <%--<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">--%>
 
     <link rel="stylesheet" href="/static/Font-Awesome-3.2.1/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/weui/weui.min.css"/>
     <link rel="stylesheet" href="/static/weui/example.css"/>
 
-    <script src="/static/bootstrap3/js/jquery-1.11.1.min.js"></script>
-    <script src="/static/bootstrap3/js/jquery.form-3.51.0.js"></script>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/jquery.form-3.51.0.js"></script>
     <script src="/static/weui/exif.js"></script>
-    <%--<script src="/static/waypoints/jquery.waypoints.min.js"></script>--%>
 </head>
 <style>
 </style>
@@ -31,7 +29,7 @@
 
                 </div>
                 <div class="page weui-tab__panel js_show slideIn" id="home" data-src="/home">
-                    <%--<jsp:include page="/home" />--%>
+
                 </div>
                 <div class="page weui-tab__panel js_show slideIn" id="search" data-src="/search">
 
@@ -55,7 +53,7 @@
                 </a>
                 <a id="show_main" href="javascript:" class="weui-tabbar__item" data-target="#home">
                     <div class="weui-tabbar__icon" style="width: 32px;">
-                        <i class="icon-globe icon-2x icon-spin" style="width: 32px;"></i>
+                        <i class="icon-globe icon-2x" style="width: 32px;"></i>
                     </div>
                     <p class="weui-tabbar__label">主页</p>
                 </a>
@@ -70,7 +68,6 @@
     </div>
 </div>
 <div id="dialogs">
-    <!--BEGIN dialog2-->
     <div class="js_dialog" id="iosDialog" style="opacity: 1; display: none;">
         <div class="weui-mask"></div>
         <div class="weui-dialog">
@@ -80,7 +77,6 @@
             </div>
         </div>
     </div>
-    <!--END dialog2-->
 </div>
 <div class="weui-gallery" id="gallery">
     <span class="weui-gallery__img" id="galleryImg"></span>
@@ -110,67 +106,20 @@
         <span class="weui-loadmore__tips">正在加载</span>
     </div>
 </div>
-<%--<div id="tabPage" style="display: none">--%>
-<%--<div class="page weui-tab__panel js_show" id="pencil" data-src="/pencil">--%>
-
-<%--</div>--%>
-<%--<div class="page weui-tab__panel js_show" id="bell" data-src="/bell">--%>
-
-<%--</div>--%>
-<%--<div class="page weui-tab__panel js_show" id="search" data-src="/search">--%>
-
-<%--</div>--%>
-<%--</div>--%>
 </body>
 <script src="static/js/common.js"></script>
 <script type="text/javascript" class="tabbar js_show">
     $(window).load(function() {
         var $tooltips = $('.js_tooltips');
 
-//        getPage($($($('a.weui-bar__item_on')).data('target')).data('src'),$($($('a.weui-bar__item_on')).data('target')));
-
-//        $("div.tabpage").children("div").each(function(){
-//            getPage($(this).data('src'),this);
-//        });
-
-//        $(".weui-bar__item_on").load(function(){
-
-//        });
-        targetShow("#bell");
-
-//        var name = window.location.href.split("#")[1];
-//        if(name == 'home' || name=='pencil' ||name == 'bell' || name == 'search'){
-//            $("a.weui-tabbar__item[data-target=#"+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-//            getPage($("#"+name).data('src'),$("#"+name));
-//            targetShow("#"+name);
-//        }else{
-//            targetShow("#bell");
-//        }
-
+        changePage();
         $(window).on('hashchange', function () {
-            var state = history.state || {};
-            var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
-            if(name == '#home' || name=='#pencil' ||name == '#bell' || name == '#search'){
-                $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-                if($(name).html().trim() == ""){
-                    getPage($(name).data('src'),$(name));
-                }
-                targetShow(name);
-            }else if(name == '#'){
-//                alert(firstshow);
-                targetShow("#bell");
-            }
+            changePage();
         });
 
         $('.weui-tabbar').on('click','.weui-tabbar__item[data-target]', function () {
             if(!$(this).is('.weui-bar__item_on')) {
                 $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-//                getPageCommon($(this).data('target'), "div.tabpage", "#tabPage");//加载切换
-//                if($($(this).data('target')).html().trim() == ""){
-//                    getPage($($(this).data('target')).data('src'),$($(this).data('target')));
-//                }
-//                targetShow($(this).data('target'));//无加载切换
-
                 window.location.href = window.location.href.split("#")[0]+$(this).data('target');
             }
         });
@@ -178,7 +127,6 @@
         $('#showTooltips').on('click', function(){
             if ($tooltips.css('display') != 'none') return;
 
-            // toptips的fixed, 如果有`animation`, `position: fixed`不生效
             $('.page.cell').removeClass('slideIn');
 
             $tooltips.css('display', 'block');
@@ -187,28 +135,29 @@
             }, 2000);
         });
 
-        //        if (!!window.EventSource) {
         if(!!window.EventSource){
-            var source = new EventSource('/bell/msg'); //为http://localhost:8080/testSpringMVC/push
+            var $globe_spin = $("i.icon-globe").addClass("icon-spin");
+
+            console.log("连接初始化...");
+            var source = new EventSource('/bell/msg');
 
             source.addEventListener('update', function(e) {
+                console.log("收到消息...");
                 var data = JSON.parse(e.data);
                 changeBellBadge(data.bellSize);
                 createHomeDetial(data.pencil);
                 createBellDetial(data.bell);
             });
-//
-//            source.addEventListener('update', function(e) {
-//                createHomeDetial(e);
-//            });
 
             source.addEventListener('open', function(e) {
-                console.log("连接打开.");
+                $globe_spin.addClass("icon-spin");
+                console.log("连接打开...");
             }, false);
 
             source.addEventListener('error', function(e) {
+                $globe_spin.removeClass("icon-spin");
                 if (e.readyState == EventSource.CLOSED) {
-                    console.log("连接关闭");
+                    console.log("连接关闭...");
                 } else {
                     console.log(e.readyState);
                 }
@@ -218,6 +167,19 @@
         }
 
     });
+
+    function changePage(){
+        var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
+        if(name == '#home' || name=='#pencil' ||name == '#bell' || name == '#search'){
+            $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+            if($(name).html().trim() == ""){
+                getPage($(name).data('src'),$(name));
+            }
+            targetShow(name);
+        }else if(name == '#'){
+            targetShow("#bell");
+        }
+    }
 
     function createHomeDetial(obj){
         createNameDetial(obj, "#showDetail-home", "#home-detail");
@@ -231,7 +193,6 @@
         var $showDetail = $(showDetail);
         var $homeDetail = $(homeDetail);
 
-//        var obj = JSON.parse(e.data).pencil;
         $showDetail.find("h4.weui-media-box__title").html(obj.bt);
         $showDetail.find("p.weui-media-box__desc").html(obj.wtms);
         $showDetail.find("a.weui-media-box_appmsg").attr("data-id", obj.id);
@@ -249,16 +210,6 @@
         }
 
     }
-
-    //    var stack = [];
-    //    function getPageCommon(name, selector, changer){
-    //        var $tpl = $(name).addClass('slideIn');
-    //        $("#tabPage").append($("div.tabpage").html());//$("#tabPage").html()+
-    ////        $("div.tabpage").empty();
-    //        $("div.tabpage").append($tpl);
-    ////        $("#tabPage").find(name).remove();
-    ////        stack.push($tpl);
-    //    }
 
     function targetShow(target){
         //主页面内主页面切换
@@ -328,20 +279,5 @@
         $(this).parents('.js_dialog').fadeOut(200);
     });
 
-    //    //加载tempPage2页面
-    //    function test_loadPageTemp2(url){
-    //        $("#temp_pg").empty();
-    //        getPage(url,"#temp_pg");
-    //        $("#temp_pg").attr("data-src","");
-    //        test_checkTempPage();
-    //    }
-    //
-    //    //切换tempPage2页面
-    //    function test_checkTempPage2(){
-    //        var $changePage = $("#tempPage").children("div").addClass('slideIn');
-    //        var $showPage = $("div.tabpage").html();
-    //        $("#tempPage").html($showPage);
-    //        $("div.tabpage").html($changePage);
-    //    }
 </script>
 </html>

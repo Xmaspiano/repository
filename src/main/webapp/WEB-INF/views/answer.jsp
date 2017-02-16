@@ -38,11 +38,19 @@
             </form>
         </c:if>
 
+        <c:if test="${answersList.size()==0}">
+            <div class="weui-cells">
+                <div class="weui-cell">
+                    <div class="weui-cell__bd">
+                        <p class="page__desc">还没有处理意见</p>
+                    </div>
+                </div>
+            </div>
+        </c:if>
         <c:forEach items="${answersList}" var="answer">
             <div class="weui-cells">
                 <div class="weui-cell">
                     <div class="weui-cell__bd">
-                        <%--<textarea class="weui-textarea" name="answer" rows="3" readonly="true" >${answer.answer}</textarea>--%>
                         <p>${answer.answer}</p>
                     </div>
                 </div>
@@ -61,17 +69,21 @@
 <br>
 <script>
     $(function(){
-        $("#answer_submit").on('click',function(){
+        var $answer_submit=$("#answer_submit"),
+                $answer_delete=$("#answer_delete"),
+                $answer_form=$("#answer-form"),
+                $answer_id=$("#answer_id");
+
+        $answer_submit.on('click',function(){
             $.ajax({
                 type: "POST",
                 url: "/answer/save",
-                data: $("#answer-form").serialize(),
+                data: $answer_form.serialize(),
                 beforeSend: function(){
                     loadingToast();
                 },
                 success: function(msg){
                     loadingToast_close();
-//                    toolShow(msg);
                     showTab("tab02");
                 },
                 error:function(XmlHttpRequest,textStatus,errorThrown){
@@ -81,19 +93,18 @@
             });
         });
 
-        $("#answer_delete").on('click',function(){
+        $answer_delete.on('click',function(){
             $.ajax({
                 type: "POST",
                 url: "/answer/delete",
                 data: {
-                    id:$("#answer_id").val()
+                    id:$answer_id.val()
                 },
                 beforeSend: function(){
                     loadingToast();
                 },
                 success: function(msg){
                     loadingToast_close();
-//                    toolShow(msg);
                     showTab("tab02");
                 },
                 error:function(XmlHttpRequest,textStatus,errorThrown){
