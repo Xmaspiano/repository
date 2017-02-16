@@ -104,6 +104,12 @@
         <p class="weui-toast__content">数据加载中</p>
     </div>
 </div>
+<div id="loadmore" style="display: none">
+    <div class="weui-loadmore" style="margin-top: 50px;">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在加载</span>
+    </div>
+</div>
 <%--<div id="tabPage" style="display: none">--%>
 <%--<div class="page weui-tab__panel js_show" id="pencil" data-src="/pencil">--%>
 
@@ -146,9 +152,11 @@
             var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
             if(name == '#home' || name=='#pencil' ||name == '#bell' || name == '#search'){
                 $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-                getPage($(name).data('src'),$(name));
+                if($(name).html().trim() == ""){
+                    getPage($(name).data('src'),$(name));
+                }
                 targetShow(name);
-            }else if(name != '#hrm'){
+            }else if(name == '#'){
 //                alert(firstshow);
                 targetShow("#bell");
             }
@@ -158,10 +166,10 @@
             if(!$(this).is('.weui-bar__item_on')) {
                 $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
 //                getPageCommon($(this).data('target'), "div.tabpage", "#tabPage");//加载切换
-                if($($(this).data('target')).html().trim() == ""){
-                    getPage($($(this).data('target')).data('src'),$($(this).data('target')));
-                }
-                targetShow($(this).data('target'));//无加载切换
+//                if($($(this).data('target')).html().trim() == ""){
+//                    getPage($($(this).data('target')).data('src'),$($(this).data('target')));
+//                }
+//                targetShow($(this).data('target'));//无加载切换
 
                 window.location.href = window.location.href.split("#")[0]+$(this).data('target');
             }
@@ -187,6 +195,7 @@
                 var data = JSON.parse(e.data);
                 changeBellBadge(data.bellSize);
                 createHomeDetial(data.pencil);
+                createBellDetial(data.bell);
             });
 //
 //            source.addEventListener('update', function(e) {
@@ -226,11 +235,19 @@
         $showDetail.find("h4.weui-media-box__title").html(obj.bt);
         $showDetail.find("p.weui-media-box__desc").html(obj.wtms);
         $showDetail.find("a.weui-media-box_appmsg").attr("data-id", obj.id);
+
+        if (obj.answer == false) {
+            $showDetail.find("div.weui-media-box__ft").html("&lt;i class=\"icon-hand-right\" style=\"color: #007dbc\">&lt;/i>");
+        } else {
+            $showDetail.find("div.weui-media-box__ft").empty();
+        }
+
         if($homeDetail.children().length > 0){
             $homeDetail.children("a:first").before($showDetail.html());
         }else{
             $homeDetail.append($showDetail.html());
         }
+
     }
 
     //    var stack = [];

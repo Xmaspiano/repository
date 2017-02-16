@@ -78,7 +78,7 @@
                                 <i class='user-group' data-id='${pencilTouser.touser}' >${pencilTouser.lastname}</i>&nbsp;
                             </c:forEach>
                         </div>
-                        <div class="weui-textarea-counter"><a class="icon-group" href="javascript:test_loadPageTemp('/hrmr.jsp');" style="color: #007dbc"></a></div>
+                        <div class="weui-textarea-counter"><a class="icon-group" href="javascript:loadHrm();" style="color: #007dbc"></a></div>
                         <input type="hidden" id="touser" name="touser" value="${pencilPage.touser}"/>
                     </div>
                 </div>
@@ -135,21 +135,20 @@
     var isOne = true;
 
     //        $(function(){
-    $(function() {
+    $(window).ready(function() {
         $("div.weui-uploader__info").html((photoNum)+"/"+totalPhotoNum);
 
 //        targetShow("#pencil-showpage","div.pencil");//主菜单面切换后默认到菜单主页面
 
-        alert(1122);
+        showMain();
+
         $(window).on('hashchange', function () {
             var state = history.state || {};
             var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
-            alert(name);
             if(name == '#hrm'){
-                alert(1);
                 test_loadPageTemp('/hrmr.jsp');
-            }else{
-
+            }else if(name = "#"){
+                showMain();
             }
         });
 
@@ -290,8 +289,15 @@
         }
     }
 
+    function showMain(){
+        $("#pencil-showpage").children().each(function(){
+            $(this).hide();
+        });
+        $("#pencil-showpage").children("div.pencil").show();
+    }
+
     function loadHrm(){
-//        window.location.href = window.location.href.split("#")[0]+"#hrm";
+        window.location.href = window.location.href.split("#")[0]+"#hrm";
 //        test_loadPageTemp('/hrmr.jsp');
     }
 

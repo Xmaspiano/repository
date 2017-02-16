@@ -57,7 +57,20 @@ public class BellController {
         Map rtnMap = new HashMap();
         Pencil pencil = (Pencil)new SubscriberManagerImpl().getSomeData();
 
+        String[] toUser = pencil.getTouser().split(",");
+
+        BellPage bellPage = null;
+        for(String loginid:toUser){
+            if(loginid.equals(String.valueOf(getUerId()))){//通知人和当前用户一致
+                bellPage = new BellPage(pencil);
+                bellPage.setAnswer(true);
+            }
+
+        }
+
+
         rtnMap.put("pencil",pencil);
+        rtnMap.put("bell",bellPage);
         rtnMap.put("bellSize",getSizeByTouser());
 
         JSONObject jsonObject = JSONObject.fromObject(rtnMap);

@@ -123,7 +123,8 @@
                 pencil_addToUser(objArray);
 //                applyAjax();
             }
-            test_checkTempPage();
+//            test_checkTempPage();
+            history.go(-1);
         });
 
         function hideSearchResult(){

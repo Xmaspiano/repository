@@ -1,7 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     String id = request.getParameter("id") == null?"":request.getParameter("id");
-    String tab = request.getParameter("tab") == null?"tab01":request.getParameter("tab");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
@@ -24,7 +23,6 @@
 <body>
 <div class="weui-toptips weui-toptips_warn js_tooltips">错误提示</div>
 <div class="page tabbar js_show">
-    <input type="hidden" id="firstshow" value="<%= tab%>"/>
     <input type="hidden" id="pencilid" value="<%= id%>"/>
     <div class="page__bd" style="height: 100%;">
         <div class="weui-tab">
@@ -141,9 +139,9 @@
 
 //        targetShow("#tab01");
         //根据URL切换首次显示页面
-        var firstshow = $("#firstshow").val();
-        firstshow == ""?"#tab01":firstshow;
-        showTab(firstshow);
+//        var firstshow = $("#firstshow").val();
+//        firstshow == ""?"#tab01":firstshow;
+        targetShow("#tab01");
 
 //        var name = window.location.href.split("#")[1];
 //        if(name == 'tab01' || name=='tab02' ||name == 'tab03' || name == 'tab04'){
@@ -159,10 +157,12 @@
             var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
             if(name == '#tab01' || name=='#tab02' ||name == '#tab03' || name == '#tab04'){
                 $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-                getPage($(name).data('src'),$(name));
+                if($(name).html().trim() == "") {
+                    getPage($(name).data('src'), $(name));
+                }
                 targetShow(name);
-            }else if(name != '#hrm'){
-                showTab(firstshow);
+            }else if(name == '#'){
+                targetShow("#tab01");
             }
         });
 
@@ -173,13 +173,13 @@
                 return false;
             }
 
-            if(!$(this).is('.weui-bar__item_on')) {
-                $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-//                if($($(this).data('target')).html().trim() == ""){
-                getPage($($(this).data('target')).data('src'),$($(this).data('target')));
-//                }
-                targetShow($(this).data('target'));//无加载切换
-            }
+//            if(!$(this).is('.weui-bar__item_on')) {
+//                $(this).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+////                if($($(this).data('target')).html().trim() == ""){
+//                getPage($($(this).data('target')).data('src'),$($(this).data('target')));
+////                }
+//                targetShow($(this).data('target'));//无加载切换
+//            }
 
             window.location.href = window.location.href.split("#")[0]+$(this).data('target');
         });
@@ -242,7 +242,9 @@
 
     function showTab(firstshow){
         $(".weui-tabbar__item[data-target='#"+firstshow+"']").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-        getPage($("#"+firstshow).data('src'),"#"+firstshow);
+//        if($("#" + firstshow).html().trim() == "") {
+            getPage($("#" + firstshow).data('src'), "#" + firstshow);
+//        }
         targetShow("#"+firstshow);
         badget();
     }

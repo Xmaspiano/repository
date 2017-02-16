@@ -50,13 +50,9 @@
                     <h4 class="weui-media-box__title"></h4>
                     <p class="weui-media-box__desc"></p>
                 </div>
+                <div class="weui-media-box__ft">
+                </div>
             </a>
-        </div>
-        <div id="loadmore" style="display: none">
-            <div class="weui-loadmore" style="margin-top: 50px;">
-                <i class="weui-loading"></i>
-                <span class="weui-loadmore__tips">正在加载</span>
-            </div>
         </div>
     </div>
 </div>

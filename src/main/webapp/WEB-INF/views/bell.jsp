@@ -32,12 +32,9 @@
 
             <div class="weui-panel weui-panel_access">
                 <%--<div class="weui-panel__hd">文字组合列表</div>--%>
-                <div id="bell-detail" class="weui-panel__bd fix-scroll" style="overflow-y: scroll;">
-                    <div class="weui-loadmore">
-                        <i class="weui-loading"></i>
-                        <span class="weui-loadmore__tips">正在加载</span>
+                    <div id="bell-detail" class="weui-panel__bd fix-scroll" style="overflow-y: scroll;">
+
                     </div>
-                </div>
             </div>
         </div>
         <div id="showDetail-bell" style="display: none">
@@ -53,7 +50,6 @@
                 </div>
             </a>
         </div>
-
     </div>
 </div>
 <script>
@@ -67,8 +63,10 @@
 
         $('#searchApply-bell').show();
 
+        $("#bell-detail").html($("#loadmore").html());
+
         $.getJSON("/bell/queryall", function (result) {
-            $("#bell-detail").empty();
+//            $("#bell-detail").empty();
             addrows(result);
         });
 
@@ -150,6 +148,7 @@
 
             changeBellBadge(result.bellSize);
 //            $bellDetail.empty();
+            $bellDetail.html($("#loadmore").html());
             $.each(result.detail.content, function (i, obj) {//bellSize
                 $showDetail.find("h4.weui-media-box__title").html(obj.bt);
                 $showDetail.find("p.weui-media-box__desc").html(obj.wtms);
@@ -159,7 +158,8 @@
                 } else {
                     $showDetail.find("div.weui-media-box__ft").empty();
                 }
-                $bellDetail.append($showDetail.html());
+//                $bellDetail.append($showDetail.html());
+                $("div.weui-loadmore").before($showDetail.html());
 //                $("div.weui-loadmore").before($showDetail.html());
             });
             $("div.weui-loadmore").children("i.weui-loading").remove();
@@ -168,6 +168,7 @@
             page = result.detail.number;
             totalPage = result.detail.totalPages;
         }
+
     });
 
     function ReplaceAll(str, sptr, sptr1){
