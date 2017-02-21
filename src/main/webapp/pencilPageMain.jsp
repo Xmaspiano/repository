@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     String id = request.getParameter("id") == null?"":request.getParameter("id");
+    System.out.println(id);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
@@ -22,17 +23,19 @@
 <body>
 <div class="weui-toptips weui-toptips_warn js_tooltips">错误提示</div>
 <div class="page tabbar js_show">
-    <input type="hidden" id="pencilid" value="<%= id%>"/>
+    <input type="hidden" id="pencilid" value="<%=id%>"/>
     <div class="page__bd" style="height: 100%;">
         <div class="weui-tab">
             <div class="tabpage">
-                <div class="page weui-tab__panel js_show slideIn" id="tab01" data-src="/pencil/up?id=<%= id%>">
-                    <jsp:include page="/pencil/up?id=<%= id%>" />
+                <div class="page weui-tab__panel js_show slideIn" id="tab01" data-src="/pencil/up?id=<%=id%>">
+                    <jsp:include page="/pencil/up">
+                        <jsp:param name="id" value="<%=id%>" />
+                    </jsp:include>
                 </div>
-                <div class="page weui-tab__panel js_show slideIn" id="tab02" data-src="/answer?id=<%= id%>">
+                <div class="page weui-tab__panel js_show slideIn" id="tab02" data-src="/answer?id=<%=id%>">
 
                 </div>
-                <div class="page weui-tab__panel js_show slideIn" id="tab03" data-src="/message?id=<%= id%>">
+                <div class="page weui-tab__panel js_show slideIn" id="tab03" data-src="/message?id=<%=id%>">
 
                 </div>
                 <div class="page weui-tab__panel js_show slideIn" id="tab04" data-src="/search">

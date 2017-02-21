@@ -136,17 +136,39 @@
         });
 
         if(!!window.EventSource){
-            var $globe_spin = $("i.icon-globe").addClass("icon-spin");
+            var $globe_spin = $("i.icon-globe");
+//            $globe_spin.addClass("icon-spin");
 
             console.log("连接初始化...");
+            $globe_spin.addClass("icon-spin");
             var source = new EventSource('/bell/msg');
 
             source.addEventListener('update', function(e) {
-                console.log("收到消息...");
+                console.log("收到消息[update]...");
                 var data = JSON.parse(e.data);
                 changeBellBadge(data.bellSize);
                 createHomeDetial(data.pencil);
                 createBellDetial(data.bell);
+                $globe_spin.addClass("icon-spin");
+            });
+
+            source.addEventListener('change', function(e) {
+                console.log("收到消息[change]...");
+                var data = JSON.parse(e.data);
+                changeBellBadge(data.bellSize);
+//                createHomeDetial(data.pencil);
+                createBellDetial(data.bell);
+                $globe_spin.addClass("icon-spin");
+            });
+
+            source.addEventListener('delete', function(e) {
+                console.log("收到消息[delete]...");
+                var data = JSON.parse(e.data);
+                console.log(data);
+                changeBellBadge(data.bellSize);
+//                createHomeDetial(data.pencil);
+                deleteBellDetial(data.bell);
+                $globe_spin.addClass("icon-spin");
             });
 
             source.addEventListener('open', function(e) {
@@ -155,11 +177,12 @@
             }, false);
 
             source.addEventListener('error', function(e) {
-                $globe_spin.removeClass("icon-spin");
-                if (e.readyState == EventSource.CLOSED) {
+                if (e.target.readyState == EventSource.CLOSED) {
+                    $globe_spin.removeClass("icon-spin");
+                    console.log(e);
                     console.log("连接关闭...");
                 } else {
-                    console.log(e.readyState);
+                    console.log(e.target.readyState );
                 }
             }, false);
         } else {
@@ -189,26 +212,36 @@
         createNameDetial(obj, "#showDetail-bell", "#bell-detail");
     }
 
-    function createNameDetial(obj, showDetail, homeDetail){
-        var $showDetail = $(showDetail);
-        var $homeDetail = $(homeDetail);
+    function deleteBellDetial(obj){
+        deleteNameDetial(obj, "#bell-detail");
+    }
 
-        $showDetail.find("h4.weui-media-box__title").html(obj.bt);
-        $showDetail.find("p.weui-media-box__desc").html(obj.wtms);
-        $showDetail.find("a.weui-media-box_appmsg").attr("data-id", obj.id);
+    function createNameDetial(obj, tempDetail, showDetail){
+        var $tempDetail = $(tempDetail);
+        var $showDetail = $(showDetail);
+
+        $tempDetail.find("h4.weui-media-box__title").html(obj.bt);
+        $tempDetail.find("p.weui-media-box__desc").html(obj.wtms);
+        $tempDetail.find("a.weui-media-box_appmsg").attr("data-id", obj.id);
 
         if (obj.answer == false) {
-            $showDetail.find("div.weui-media-box__ft").html("&lt;i class=\"icon-hand-right\" style=\"color: #007dbc\">&lt;/i>");
+            $tempDetail.find("div.weui-media-box__ft").html("&lt;i class=\"icon-hand-right\" style=\"color: #007dbc\">&lt;/i>");
         } else {
-            $showDetail.find("div.weui-media-box__ft").empty();
+            $tempDetail.find("div.weui-media-box__ft").empty();
         }
 
-        if($homeDetail.children().length > 0){
-            $homeDetail.children("a:first").before($showDetail.html());
+        if($showDetail.children().length > 0){
+            $showDetail.children("a:first").before($tempDetail.html());
         }else{
-            $homeDetail.append($showDetail.html());
+            $showDetail.append($tempDetail.html());
         }
 
+    }
+
+    function deleteNameDetial(obj, showDetail){
+        var $showDetail = $(showDetail);
+
+        $showDetail.find("a.weui-media-box[data-id='"+obj.id+"']").remove();
     }
 
     function targetShow(target){

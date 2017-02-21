@@ -30,7 +30,7 @@
                 <div class="weui-cell">
                     <div class="weui-cell__hd"><label class="weui-label">用户名</label></div>
                     <div class="weui-cell__bd">
-                        <input class="weui-input" name="username" type="number" pattern="[0-9]*" placeholder="请输入OA登陆账号">
+                        <input class="weui-input" name="username" type="text" placeholder="请输入OA登陆账号">
                     </div>
                 </div>
                 <div class="weui-cell">
@@ -64,12 +64,28 @@
     $(function(){
         $("input.weui-input[name=username]").focus();
 
+        $(document).on("keyup",function(event){
+            if(event.keyCode ==13){
+                $("#showTooltips").trigger("click");
+            }
+        });
+
         $("#showTooltips").on('click',function(){
             $.ajax({
                 type: "POST",
                 url: "/login",
                 data: $("#form1").serialize(),
                 beforeSend: function(){
+                    if($("input.weui-input[name='username']").val() == ""){
+                        toolShow("用户名不能为空...");
+                        return false;
+                    }
+
+                    if($("input.weui-input[name='password']").val() == ""){
+                        toolShow("密码不能为空...");
+                        return false;
+                    }
+
                     loadingToast();
                 },
                 success: function(msg){

@@ -6,6 +6,7 @@ import com.asiagroup.app.entity.PencilImg;
 import com.asiagroup.app.entity.Touser;
 import com.asiagroup.app.page.BellPage;
 import com.asiagroup.app.page.PencilPage;
+import com.asiagroup.app.pojo.PencilPojoMsg;
 import com.asiagroup.app.repository.PencilRepository;
 import com.asiagroup.app.service.AnswerService;
 import com.asiagroup.app.service.PencilImgService;
@@ -20,6 +21,7 @@ import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.MetadataException;
 import org.apache.shiro.SecurityUtils;
 import org.hibernate.Transaction;
+import org.hibernate.mapping.Array;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -55,10 +57,25 @@ public class PencilServiceImpl
     SystemCommon systemCommon;
 
     public Pencil saveAndCallBack(PencilPage pencilPage) throws CloneNotSupportedException, IOException, JpegProcessingException {
+        Pencil dbPencil = getRepository().findOne(pencilPage.getId());
         Pencil pencil = save(pencilPage);
         //4.更新缓存,推送消息数据
-        if(pencil != null){
+        if(pencil != null && pencilPage.getId() == null){//创建时才执行推送
             SubscriberManagerImpl.homeWatched.setData(pencil);
+        }else if(pencilPage.getId() != null){
+            String[] touser_db = dbPencil.getTouser().split(",");
+            String[] touser_save = pencil.getTouser().split(",");
+            Arrays.sort(touser_db);
+            Arrays.sort(touser_save);
+
+            if(false == Arrays.equals(touser_db, touser_save)) {//通知人不一致
+                PencilPojoMsg pencilPojoMsg = new PencilPojoMsg();
+                pencilPojoMsg.setPencil(pencil);
+                pencilPojoMsg.setTouser_db(touser_db);
+                pencilPojoMsg.setTouser_save(touser_save);
+
+                SubscriberManagerImpl.homeWatched.setData(pencilPojoMsg);
+            }
         }
         return pencil;
     }
@@ -67,7 +84,7 @@ public class PencilServiceImpl
     public Page<Pencil> findAllByTouserId(Long touserid, Map mp, Pageable pageable) {
 //        Specification specification = createSpecification(mp);//后续需要完成复合查询
         if(mp == null || mp.get("bt") == null ){
-            mp = new HashMap<>();
+            mp = new HashMap();
             mp.put("bt","%%");
         }
 
@@ -193,9 +210,6 @@ public class PencilServiceImpl
 
                         Expression<String> x = root.get(keyname).as(String.class);
                         String val = "%"+mp.get(keyname).toString()+"%";
-
-                        System.out.println(x);
-                        System.out.println(val);
 
                         if (p2 == null) {
                             p2 = cb.like(x, val);

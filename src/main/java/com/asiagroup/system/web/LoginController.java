@@ -45,13 +45,21 @@ public class LoginController {
 
             rtnMap.put("success", true);
             rtnMap.put("url","/index.jsp");
-        } catch (AuthenticationException e) {
+        } catch (AuthenticationException ae) {
             //5、身份验证失败
-            e.printStackTrace();
-            error = e.getMessage();
+            ae.printStackTrace();
+            error = "用户名或密码错误...";
+//            error = ae.getMessage();
             rtnMap.put("success", false);
             rtnMap.put("url","/login.jsp");
             rtnMap.put("error", error);
+
+        } catch (Exception e) {
+            //5、身份验证失败
+            e.printStackTrace();
+            rtnMap.put("success", false);
+            rtnMap.put("url","/login.jsp");
+            rtnMap.put("error", "登陆异常...");
         }
         return rtnMap;
     }

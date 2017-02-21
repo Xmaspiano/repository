@@ -4,9 +4,11 @@ import com.asiagroup.app.entity.Answer;
 import com.asiagroup.app.entity.Pencil;
 import com.asiagroup.app.page.BellPage;
 import com.asiagroup.app.page.PencilPage;
+import com.asiagroup.app.pojo.PencilPojoMsg;
 import com.asiagroup.app.service.AnswerService;
 import com.asiagroup.app.service.PencilService;
 import com.asiagroup.app.service.TouserService;
+import com.asiagroup.app.util.AppCommonTool;
 import com.asiagroup.util.SystemCommon;
 import com.asiagroup.util.subscriber.SubscriberManagerImpl;
 import net.sf.json.JSONObject;
@@ -55,28 +57,63 @@ public class BellController {
     @ResponseBody
     public String push() throws InterruptedException {
         Map rtnMap = new HashMap();
-        Pencil pencil = (Pencil)new SubscriberManagerImpl().getSomeData();
+        Object object = new SubscriberManagerImpl().getSomeData();
 
-        String[] toUser = pencil.getTouser().split(",");
+        if(object instanceof Pencil) {//创建表单msg
+            Pencil pencil = (Pencil) object;
 
-        BellPage bellPage = null;
-        for(String loginid:toUser){
-            if(loginid.equals(String.valueOf(getUerId()))){//通知人和当前用户一致
-                bellPage = new BellPage(pencil);
-                bellPage.setAnswer(true);
+            String[] toUser = pencil.getTouser().split(",");
+
+            BellPage bellPage = null;
+            for (String loginid : toUser) {
+                if (loginid.equals(String.valueOf(getUerId()))) {//通知人和当前用户一致
+                    bellPage = new BellPage(pencil);
+                    bellPage.setAnswer(true);
+                }
+
             }
 
-        }
+            rtnMap.put("pencil", pencil);
+            rtnMap.put("bell", bellPage);
+            rtnMap.put("bellSize", getSizeByTouser());
 
-
-        rtnMap.put("pencil",pencil);
-        rtnMap.put("bell",bellPage);
-        rtnMap.put("bellSize",getSizeByTouser());
-
-        JSONObject jsonObject = JSONObject.fromObject(rtnMap);
+            JSONObject jsonObject = JSONObject.fromObject(rtnMap);
 //        System.out.println(jsonObject.toString());
-        return "event: update\n" +
-                "data:"+jsonObject.toString()+"\n\n";
+            return "event: update\n" +
+                    "data:" + jsonObject.toString() + "\n\n";
+        }
+        else if(object instanceof PencilPojoMsg) {//变更通知人msg
+            PencilPojoMsg pencilPojoMsg = (PencilPojoMsg)object;
+
+            Set<String>[] sets = AppCommonTool.getDiffernt(pencilPojoMsg.getTouser_db(),pencilPojoMsg.getTouser_save());
+
+            Set<String> different_db = sets[0];//需要取消通知的人员
+            Set<String> different_save = sets[1];  //需要添加的通知人员
+
+            BellPage bellPage = new BellPage(pencilPojoMsg.getPencil());
+            bellPage.setAnswer(true);
+
+            rtnMap.put("bell", bellPage);
+            rtnMap.put("bellSize", getSizeByTouser());
+
+            String rtnMsg = "pass";
+
+            String userid = String.valueOf(getUerId());
+
+            if(!different_db.add(userid)){//取消通知
+                rtnMsg = "delete";
+            }
+            else if(!different_save.add(userid)){//通知
+                rtnMsg = "change";
+            }
+
+            return "event: "+rtnMsg+"\n" +
+                    "data:" + JSONObject.fromObject(rtnMap).toString() + "\n\n";
+        }
+        else{
+            return "event: pass\n" +
+                    "data:\n\n";
+        }
     }
 
     @RequestMapping("/queryall")
@@ -99,10 +136,6 @@ public class BellController {
         Page<BellPage> bells = pageChange(pencilPage, pageable);
         if(bells == null) {
             bells = new PageImpl(new ArrayList<BellPage>());
-        }
-
-        for(BellPage bellPage:bells) {
-            System.out.println(bellPage.getTouser());
         }
 
         mp.put("detail", bells);
