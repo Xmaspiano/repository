@@ -52,9 +52,9 @@
     </div>
 </div>
 <script>
-    var page = 0;
-    var totalPage = 0;
-    var clock = true;
+    var page_bell = 0;
+    var totalPage_bell = 0;
+    var clock_bell = true;
 
 
     $(function() {
@@ -78,16 +78,16 @@
                     contentH =$(this).get(0).scrollHeight,//内容高度
                     scrollTop =$(this).scrollTop();//滚动高度
             //if(contentH - viewH - scrollTop <= 100) { //到达底部100px时,加载新内容
-            if(clock){
-                if(scrollTop/(contentH -viewH)>=0.95 && totalPage > page+1){ //到达底部95%时,加载新内容
-                    clock = false;
+            if(clock_bell){
+                if(scrollTop/(contentH -viewH)>=0.95 && totalPage_bell > page_bell+1){ //到达底部95%时,加载新内容
+                    clock_bell = false;
                     loadingToast();
                     // 这里加载数据..
-                    $.getJSON("/bell/queryall?page="+(page+1), function (result) {
+                    $.getJSON("/bell/queryall?page="+(page_bell+1), function (result) {
                         addrows(result);
                         loadingToast_close();
                         toast();
-                        clock = true;
+                        clock_bell = true;
                     });
                 }
             }
@@ -149,8 +149,8 @@
             $bellDetail.find("div.weui-loadmore").children("i.weui-loading").remove();
             $bellDetail.find("div.weui-loadmore").children("span.weui-loadmore__tips").html("");
 
-            page = result.detail.number;
-            totalPage = result.detail.totalPages;
+            page_bell = result.detail.number;
+            totalPage_bell = result.detail.totalPages;
         }
     });
 </script>

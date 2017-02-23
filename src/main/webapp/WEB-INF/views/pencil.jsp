@@ -7,7 +7,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<meta name="viewport" content="width=device-width">
+<%--<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">--%>
 <style>
     /* 表单行颜色 */
     .color-01{
@@ -97,9 +97,11 @@
                                 <div class="weui-uploader__bd">
                                     <ul class="weui-uploader__files" id="uploaderFiles" name="uploaderInputs" style="margin-bottom: 0px;">
                                         <c:forEach items="${pencilImgs}" var="pencilImg">
-                                            <li class="weui-uploader__file" style="background-image:url('${pencilImg.getStrImgdata()}');transform:rotate(${pencilImg.rotate}deg)"
+                                            <li class="weui-uploader__file" style="background-image:url('${pencilImg.getStrImgdata()}');transform:rotate(${pencilImg.rotate}deg);background-size: cover"
                                                 data-url="${pencilImg.getStrImgdata()}" data-rotate="${pencilImg.rotate}"
-                                            ></li>
+                                            >
+                                            </li>
+                                            <a href="javascript:" class="weui-icon-clear" id="searchClear" style="color: red"></a>
                                         </c:forEach>
                                     </ul>
                                     <c:if test='${pencilPage == null}'>
@@ -142,6 +144,7 @@
                 $uploaderInput = $pencil_form.find("#uploaderInput"),
                 $uploaderFiles = $pencil_form.find("#uploaderFiles"),
                 $li_temp = $pencil_form.find("pencil-temp"),
+                $imgfileid = $pencil_form.find("#imgfileid"),
                 $form_jjcd = $pencil_form.find("#jjcd"),
                 $form_btn_apply = $pencil_form.find("#apply"),
                 $tempPage = $pencil_form.find("#tempPage"),
@@ -149,17 +152,16 @@
                 $wtms = $pencil_form.find("#wtms")
                 ;
 
+        var IMG_file_html = getCookie('imgFileHtml');
+        if(IMG_file_html!=null && IMG_file_html!=""){
+            alert(IMG_file_html);
+        }
+
         $pencil_form.find("div.weui-uploader__info").html((photoNum)+"/"+totalPhotoNum);
 
-        showMain();
-
+        changePage_pencil();
         $(window).on('hashchange', function () {
-            var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
-            if(name == '#hrm'){
-                test_loadPageTemp('/hrmr.jsp');
-            }else if(name = "#"){
-                showMain();
-            }
+            changePage_pencil();
         });
 
         $uploaderInput.on("click", function(){
@@ -215,7 +217,7 @@
                                             rotate:_rotate
                                         },
                                         function(data,status){
-                                            $pencil_form.find("#imgfileid").append('<input id="'+data.ImageId+'" type="checkbox" name="ImageDataId" checked value="'+data.ImageId+'">');
+                                            $imgfileid.append('<input id="'+data.ImageId+'" type="checkbox" name="ImageDataId" checked value="'+data.ImageId+'">');
                                             $li_temp.attr("id", data.ImageId);
                                         });
                             });
@@ -251,15 +253,26 @@
         });
 
         $uploaderFiles.on("click", "li", function(){
-            $galleryImg.attr("style", this.getAttribute("style"));
-            $gallery.find("a.weui-gallery__del").html(
-                    <c:choose><c:when  test="${pencilPage == null}">
-                    "<i class=\"weui-icon-delete weui-icon_gallery-delete\"></i>"
-            </c:when><c:otherwise>
-            "<i class=\"icon-reply icon-2x\" style=\"color: white\"></i>"
-            </c:otherwise></c:choose>
-            );
-            $gallery.fadeIn(200);
+            <%--$galleryImg.attr("style", this.getAttribute("style"));--%>
+            <%--$gallery.find("a.weui-gallery__del").html(--%>
+                    <%--<c:choose><c:when  test="${pencilPage == null}">--%>
+                    <%--"<i class=\"weui-icon-delete weui-icon_gallery-delete\"></i>"--%>
+            <%--</c:when><c:otherwise>--%>
+            <%--"<i class=\"icon-reply icon-2x\" style=\"color: white\"></i>"--%>
+            <%--</c:otherwise></c:choose>--%>
+            <%--);--%>
+            <%--$gallery.fadeIn(200);--%>
+
+//            window.location.href = $(this).data("url");
+//            window.document.cookie="IMG_file_html="+encodeURI($uploaderFiles.html());
+            var imgfile = encodeURI($uploaderFiles.html())+"";
+            alert($uploaderFiles.html());
+            //使用示例
+            setCookie('imgFileHtml',imgfile,30);
+            alert(getCookie("imgFileHtml"));
+
+            $("#postImg").children("input[name=img]").val(this.getAttribute("style"));
+            $("#postImg").submit();
         });
 
         $gallery.on("click", function(){
@@ -267,6 +280,7 @@
         });
 
         $gallery.on("click","a.weui-gallery__del", function(){
+            <c:if test="${pencilPage == null}">
             var showImg = $galleryImg.css("background-image");
             $("li.weui-uploader__file").each(function(){
                 if($(this).css("background-image") == showImg){
@@ -274,6 +288,7 @@
                     $("#"+$(this).attr("id")).remove();
                 }
             });
+            </c:if>
             $gallery.fadeOut(200);
         });
 
@@ -281,8 +296,18 @@
             applyAjax();
         });
 
+        function changePage_pencil(){
+            var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
+            if(name == '#hrm'){
+                callPageShow("main");
+                test_loadPageTemp('/hrmr.jsp');
+            }else{
+                showMain();
+            }
+        }
+
         function showMain(){
-            $pencil_showpage.children("div.page").each(function(){
+            $pencil_showpage.children("div").each(function(){
                 $(this).hide();
             });
             $pencil_showpage.children("div.pencil").show();
@@ -348,18 +373,51 @@
     }
 
     function pencil_addToUser(inval){
-        if(inval.length >0) {
-            var $showUser = $("#pencil-form").find("#showUser"),
-                    $touser = $("#pencil-form").find("#touser");
+        var $showUser = $("#pencil-form").find("#showUser"),
+                $touser = $("#pencil-form").find("#touser");
+        $showUser.empty();
+        $touser.val("");
 
+        if(inval.length >0) {
             var tousers = "";
-            $showUser.empty();
             for (var i = 0; i < inval.length; i++) {
                 $showUser.append("<i class='user-group' data-id='" + inval[i].id + "' >" + inval[i].lastname + "</i>&nbsp;");
                 tousers += inval[i].id + ",";
             }
             $touser.val(tousers.substring(0, tousers.length - 1));
         }
+    }
+</script>
+<script>
+    //JS操作cookies方法!
+
+    //写cookies
+    function setCookie(c_name, value, expiredays){
+        var exdate=new Date();
+        exdate.setDate(exdate.getDate() + expiredays);
+        document.cookie=c_name+ "=" + escape(value) + ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+    }
+
+    //读取cookies
+    function getCookie(name)
+    {
+        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+
+        if(arr=document.cookie.match(reg))
+
+            return (arr[2]);
+        else
+            return null;
+    }
+
+    //删除cookies
+    function delCookie(name)
+    {
+        var exp = new Date();
+        exp.setTime(exp.getTime() - 1);
+        var cval=getCookie(name);
+        if(cval!=null)
+            document.cookie= name + "="+cval+";expires="+exp.toGMTString();
     }
 </script>
 <script>

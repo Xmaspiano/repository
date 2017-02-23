@@ -1,14 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%
     String id = request.getParameter("id") == null?"":request.getParameter("id");
-    System.out.println(id);
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, user-scalable=yes">
 
     <link rel="stylesheet" href="/static/Font-Awesome-3.2.1/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/weui/weui.min.css"/>
@@ -102,6 +102,9 @@
         </a>
     </div>
 </div>
+<form id="postImg" action="imgShow.jsp" method="post">
+    <input type="hidden" name="img" value=""/>
+</form>
 <div id="toast" style="display: none;">
     <div class="weui-mask_transparent"></div>
     <div class="weui-toast">
@@ -140,7 +143,7 @@
             window.location.href = window.location.href.split("#")[0]+$(this).data('target');
         });
 
-        badget();
+//        badget();
     });
 
     function targetShow(target){
@@ -239,12 +242,31 @@
         var name = location.hash.indexOf('#') === 0 ? location.hash : '#';
         if(name == '#tab01' || name=='#tab02' ||name == '#tab03' || name == '#tab04'){
             $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
-            if($(name).html().trim() == "") {
+            if($(name).html().trim() == "" || name =='#tab02' || name == '#tab03' ) {
+                $(name).html("");
                 getPage($(name).data('src'), $(name));
             }
             targetShow(name);
-        }else if(name == '#'){
-            targetShow("#tab01");
+        }else if(name == '#hrm'){
+//            targetShow("#tab01");
+        }else{
+//            targetShow("#bell");
+            window.location.href = window.location.href.split("#")[0]+"#tab01";
+        }
+    }
+
+    function callPageShow(item){
+        var name = "";
+        switch (item){
+            case "main":
+                name = "#tab01";
+                break;
+        }
+        if(name == '#tab01' || name=='#tab02' ||name == '#tab03' || name == '#tab04'){
+            $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+            targetShow(name);
+        }else{
+            window.location.href = window.location.href.split("#")[0]+"#bell";
         }
     }
 

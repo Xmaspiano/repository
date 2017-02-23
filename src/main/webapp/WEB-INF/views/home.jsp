@@ -51,9 +51,9 @@
     </div>
 </div>
 <script>
-    var page = 0;
-    var totalPage = 0;
-    var clock = true;
+    var page_home = 0;
+    var totalPage_home = 0;
+    var clock_home = true;
 
     $(function() {
         var $searchBar = $('#searchBar-home'),
@@ -75,16 +75,16 @@
                     viewH =$(this).height(),//可见高度
                     contentH =$(this).get(0).scrollHeight,//内容高度
                     scrollTop =$(this).scrollTop();//滚动高度
-            if(clock){
-                if(scrollTop/(contentH -viewH)>=0.95 && totalPage > page+1){ //到达底部95%时,加载新内容
-                    clock = false;
+            if(clock_home){
+                if(scrollTop/(contentH -viewH)>=0.95 && totalPage_home > page_home+1){ //到达底部95%时,加载新内容
+                    clock_home = false;
                     loadingToast();
                     // 这里加载数据..
-                    $.getJSON("/home/queryall?bt="+$searchInput.val()+"&page="+(page+1), function (result) {
+                    $.getJSON("/home/queryall?bt="+$searchInput.val()+"&page="+(page_home+1), function (result) {
                         addrows(result);
                         loadingToast_close();
                         toast();
-                        clock = true;
+                        clock_home = true;
                     });
                 }
             }
@@ -139,8 +139,8 @@
             $homeDetail.find("div.weui-loadmore").children("i.weui-loading").remove();
             $homeDetail.find("div.weui-loadmore").children("span.weui-loadmore__tips").html("");
 
-            page = result.number;
-            totalPage = result.totalPages;
+            page_home = result.number;
+            totalPage_home = result.totalPages;
         }
     });
 </script>

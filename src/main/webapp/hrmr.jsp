@@ -14,10 +14,10 @@
 </style>
 <div class="page__bd container" >
     <div class="weui-search-bar" id="searchBar" style="width:100%;position: absolute; top:0; left: 0; z-index: 500">
-        <form id="form-hrmr" class="weui-search-bar__form">
+        <form id="form-hrmr" class="weui-search-bar__form" method="post" onsubmit="javascript:return false">
             <div class="weui-search-bar__box">
                 <i class="weui-icon-search"></i>
-                <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+                <input type="search" class="weui-search-bar__input" id="searchInput" name="searchInput" placeholder="搜索" required="">
                 <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
             </div>
             <label class="weui-search-bar__label" id="searchText">
@@ -84,16 +84,31 @@
             $searchBar.addClass('weui-search-bar_focusing');
             $searchInput.focus();
         });
+//
+//        $(document).on("keyup",function(event){
+//            if(event.keyCode ==13){
+////                $("#showTooltips").trigger("click");
+//                alert(11);
+//                return false;
+//            }
+//        });
 
-        $searchInput.keyup(function(){
+        $searchInput.keyup(function(event){
+            if(event.keyCode ==13){
+                return false;
+            }
             $searchInput.val();
             $("#cell_detial").find("input.weui-check").each(function(){
-                if( $(this).data('name').indexOf($searchInput.val()) ==0 || $(this).data('lastname').indexOf($searchInput.val()) ==0 ){
+                if( $(this).data('name').indexOf($searchInput.val()) >=0 || $(this).data('lastname').indexOf($searchInput.val()) >=0 ){
                     $(this).parent().parent("label.weui-check__label").show();
                 }else{
                     $(this).parent().parent("label.weui-check__label").hide();
                 }
             });
+        });
+
+        $("#cell_detial").on("click", "input.weui-check", function(){
+            alert(1);
         });
 
         $searchClear.on('click', function(){
@@ -103,22 +118,26 @@
         });
 
         $searchCancel.on('click', function(){
+            $searchInput.val("");
             cancelSearch();
         });
 
         $searchApply.on('click', function(){
             var checks = ReplaceAll($('#hrmrform').serialize(),"radio1=","").split("&");
+            var objArray = new Array(checks.length);
             if(checks != "") {
-                var objArray = new Array(checks.length);
-
                 for (var i = 0; i < objArray.length; i++) {
                     var checkVO = new Object();
                     checkVO.id = checks[i];
                     checkVO.lastname = $("#" + checks[i]).data("lastname");
                     objArray[i] = checkVO;
                 }
-                pencil_addToUser(objArray);
+
+            }else{
+                objArray = new Array(0);
             }
+
+            pencil_addToUser(objArray);
             history.go(-1);
         });
 

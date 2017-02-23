@@ -57,12 +57,18 @@ public class PencilServiceImpl
     SystemCommon systemCommon;
 
     public Pencil saveAndCallBack(PencilPage pencilPage) throws CloneNotSupportedException, IOException, JpegProcessingException {
-        Pencil dbPencil = getRepository().findOne(pencilPage.getId());
+        boolean sendOrChange = false;
+
+        Pencil dbPencil = null;
+        if(pencilPage.getId() != null){
+            dbPencil = getRepository().findOne(pencilPage.getId());
+            sendOrChange = dbPencil != null;//更新数据
+        }
         Pencil pencil = save(pencilPage);
+
         //4.更新缓存,推送消息数据
-        if(pencil != null && pencilPage.getId() == null){//创建时才执行推送
-            SubscriberManagerImpl.homeWatched.setData(pencil);
-        }else if(pencilPage.getId() != null){
+        if(pencil != null && sendOrChange){
+
             String[] touser_db = dbPencil.getTouser().split(",");
             String[] touser_save = pencil.getTouser().split(",");
             Arrays.sort(touser_db);
@@ -76,7 +82,10 @@ public class PencilServiceImpl
 
                 SubscriberManagerImpl.homeWatched.setData(pencilPojoMsg);
             }
+        }else if(pencil != null && sendOrChange == false){//创建时才执行推送
+            SubscriberManagerImpl.homeWatched.setData(pencil);
         }
+
         return pencil;
     }
 

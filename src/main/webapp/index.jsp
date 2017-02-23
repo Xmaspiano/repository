@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=3, user-scalable=yes">
 
     <link rel="stylesheet" href="/static/Font-Awesome-3.2.1/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/weui/weui.min.css"/>
@@ -26,10 +26,10 @@
                     <jsp:include page="/bell" />
                 </div>
                 <div class="page weui-tab__panel js_show slideIn" id="pencil" data-src="/pencil">
-
+                    <jsp:include page="/pencil" />
                 </div>
                 <div class="page weui-tab__panel js_show slideIn" id="home" data-src="/home">
-
+                    <jsp:include page="/home" />
                 </div>
                 <div class="page weui-tab__panel js_show slideIn" id="search" data-src="/search">
 
@@ -86,6 +86,9 @@
         </a>
     </div>
 </div>
+<form id="postImg" action="imgShow.jsp" method="post">
+    <input type="hidden" name="img" value=""/>
+</form>
 <div id="toast" style="display: none;">
     <div class="weui-mask_transparent"></div>
     <div class="weui-toast">
@@ -199,8 +202,27 @@
                 getPage($(name).data('src'),$(name));
             }
             targetShow(name);
-        }else if(name == '#'){
-            targetShow("#bell");
+        }else if(name == '#hrm'){
+//            $("a.weui-tabbar__item[data-target=#pencil]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+//            targetShow("#pencil");
+        }else{
+//            targetShow("#bell");
+            window.location.href = window.location.href.split("#")[0]+"#bell";
+        }
+    }
+
+    function callPageShow(item){
+        var name = "";
+        switch (item){
+            case "main":
+                name = "#pencil";
+                break;
+        }
+        if(name == '#home' || name=='#pencil' ||name == '#bell' || name == '#search') {
+            $("a.weui-tabbar__item[data-target="+name+"]").addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+            targetShow(name);
+        }else{
+            window.location.href = window.location.href.split("#")[0]+"#bell";
         }
     }
 
