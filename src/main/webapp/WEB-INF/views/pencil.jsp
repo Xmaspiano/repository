@@ -152,11 +152,6 @@
                 $wtms = $pencil_form.find("#wtms")
                 ;
 
-        var IMG_file_html = getCookie('imgFileHtml');
-        if(IMG_file_html!=null && IMG_file_html!=""){
-            alert(IMG_file_html);
-        }
-
         $pencil_form.find("div.weui-uploader__info").html((photoNum)+"/"+totalPhotoNum);
 
         changePage_pencil();
@@ -253,26 +248,18 @@
         });
 
         $uploaderFiles.on("click", "li", function(){
-            <%--$galleryImg.attr("style", this.getAttribute("style"));--%>
-            <%--$gallery.find("a.weui-gallery__del").html(--%>
-                    <%--<c:choose><c:when  test="${pencilPage == null}">--%>
-                    <%--"<i class=\"weui-icon-delete weui-icon_gallery-delete\"></i>"--%>
-            <%--</c:when><c:otherwise>--%>
-            <%--"<i class=\"icon-reply icon-2x\" style=\"color: white\"></i>"--%>
-            <%--</c:otherwise></c:choose>--%>
-            <%--);--%>
-            <%--$gallery.fadeIn(200);--%>
+            $galleryImg.attr("style", this.getAttribute("style"));
+            $gallery.find("a.weui-gallery__del").html(
+                    <c:choose><c:when  test="${pencilPage == null}">
+                    "<i class=\"weui-icon-delete weui-icon_gallery-delete\"></i>"
+            </c:when><c:otherwise>
+            "<i class=\"icon-reply icon-2x\" style=\"color: white\"></i>"
+            </c:otherwise></c:choose>
+            );
+            $gallery.fadeIn(200);
 
-//            window.location.href = $(this).data("url");
-//            window.document.cookie="IMG_file_html="+encodeURI($uploaderFiles.html());
-            var imgfile = encodeURI($uploaderFiles.html())+"";
-            alert($uploaderFiles.html());
-            //使用示例
-            setCookie('imgFileHtml',imgfile,30);
-            alert(getCookie("imgFileHtml"));
-
-            $("#postImg").children("input[name=img]").val(this.getAttribute("style"));
-            $("#postImg").submit();
+//            $("#postImg").children("input[name=img]").val(this.getAttribute("style"));
+//            $("#postImg").submit();
         });
 
         $gallery.on("click", function(){
@@ -343,8 +330,8 @@
             }
 
             if($("#pencil-form").find("#touser").val() == ""){
-//                alertDialog("请选择通知人后提交...");
-//                return false;
+                alertDialog("请选择通知人后提交...");
+                return false;
             }
 
             //异步提交表单
@@ -389,36 +376,36 @@
     }
 </script>
 <script>
-    //JS操作cookies方法!
-
-    //写cookies
-    function setCookie(c_name, value, expiredays){
-        var exdate=new Date();
-        exdate.setDate(exdate.getDate() + expiredays);
-        document.cookie=c_name+ "=" + escape(value) + ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
-    }
-
-    //读取cookies
-    function getCookie(name)
-    {
-        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
-
-        if(arr=document.cookie.match(reg))
-
-            return (arr[2]);
-        else
-            return null;
-    }
-
-    //删除cookies
-    function delCookie(name)
-    {
-        var exp = new Date();
-        exp.setTime(exp.getTime() - 1);
-        var cval=getCookie(name);
-        if(cval!=null)
-            document.cookie= name + "="+cval+";expires="+exp.toGMTString();
-    }
+//    //JS操作cookies方法!
+//
+//    //写cookies
+//    function setCookie(c_name, value, expiredays){
+//        var exdate=new Date();
+//        exdate.setDate(exdate.getDate() + expiredays);
+//        document.cookie=c_name+ "=" + escape(value) + ((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+//    }
+//
+//    //读取cookies
+//    function getCookie(name)
+//    {
+//        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+//
+//        if(arr=document.cookie.match(reg))
+//
+//            return (arr[2]);
+//        else
+//            return null;
+//    }
+//
+//    //删除cookies
+//    function delCookie(name)
+//    {
+//        var exp = new Date();
+//        exp.setTime(exp.getTime() - 1);
+//        var cval=getCookie(name);
+//        if(cval!=null)
+//            document.cookie= name + "="+cval+";expires="+exp.toGMTString();
+//    }
 </script>
 <script>
     /**

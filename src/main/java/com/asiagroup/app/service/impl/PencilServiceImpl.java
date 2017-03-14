@@ -39,7 +39,7 @@ import java.util.*;
  * Created by AlbertXmas on 2017/1/12.
  */
 @Service
-//@Transactional
+@Transactional
 public class PencilServiceImpl
         extends CommonServiceImpl<Pencil, PencilRepository>
         implements PencilService  {
@@ -172,8 +172,10 @@ public class PencilServiceImpl
 
             PencilImg pencilImg = null;
             for (String id : pencilPage.getImageDataId()) {
-//                System.out.println("IMG_id:" + id);
+                System.out.println("IMG_id:" + id);
                 pencilImg = new PencilImg();
+
+                System.out.println(pencilImgService.getCache(id).getImgdata());
 
                 pencilImg.setImgdata(
                         pencilImgService.getCache(id).getImgdata().getBytes()

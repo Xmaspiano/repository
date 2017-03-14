@@ -101,7 +101,7 @@ create table TOUSER
 (
   id         NUMBER(10) not null,
   touser     VARCHAR2(10),
-  name       VARCHAR2(50),
+  lastname   VARCHAR2(50),
   pencilid   NUMBER(10),
   createdate DATE default sysdate,
 

@@ -11,6 +11,20 @@
         height: calc(100vh - 100px);
         margin-top: 44px;
     }
+
+    .weui-cells_radio .weui-check:checked+.weui-icon-checked:before {
+        display: block;
+        content: '\EA08';
+        color: #007dbc;
+        font-size: 16px;
+    }
+
+    .checkRadio{
+        display: block;
+        content: '\EA08';
+        color: #007dbc;
+        font-size: 16px;
+    }
 </style>
 <div class="page__bd container" >
     <div class="weui-search-bar" id="searchBar" style="width:100%;position: absolute; top:0; left: 0; z-index: 500">
@@ -44,7 +58,7 @@
             <p>cell standard</p>
         </div>
         <div class="weui-cell__ft">
-            <input type="checkbox" name="radio1" class="weui-check" id="" data-name="" data-lastname="" value="" >
+            <input type="checkbox" name="radio1" class="weui-check weui-cells_radio" id="" data-name="" data-lastname="" value="" >
             <span class="weui-icon-checked"></span>
         </div>
     </label>
@@ -105,10 +119,6 @@
                     $(this).parent().parent("label.weui-check__label").hide();
                 }
             });
-        });
-
-        $("#cell_detial").on("click", "input.weui-check", function(){
-            alert(1);
         });
 
         $searchClear.on('click', function(){

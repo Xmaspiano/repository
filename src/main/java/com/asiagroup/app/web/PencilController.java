@@ -47,28 +47,31 @@ public class PencilController {
 
     @RequestMapping("/up")
     public String pencilUpdatePage(@RequestParam("id")long id,Model model){
-//        System.out.println(id);
+        indexPage(id, model);
+        return "pencil";
+    }
+
+    @RequestMapping("/web/up")
+    public String pencilUpdatePageWeb(@RequestParam("id")long id,Model model){
+        indexPage(id, model);
+        return "/web/pencilMain";
+    }
+
+    private void indexPage(long id,Model model){
         PencilPage pencilPage = new PencilPage().setPencilPage(pencilService.findOne(id));
 
         List<PencilImg>  pencilImgs = pencilImgService.findByPencilId(id);
         List<Touser> pencilTousers = touserService.findByPencilId(id);
 
-//        System.out.println(pencilPage);
-//        System.out.println(String.valueOf(pencilImgs.get(0).getImgdata()));
-
-//        for(Touser t:pencilTousers){
-//            System.out.println(t.getTouser());
-//        }
-
         model.addAttribute(pencilPage);
         model.addAttribute("pencilImgs",pencilImgs);
         model.addAttribute("pencilTousers",pencilTousers);
-        return "pencil";
     }
 
     @RequestMapping("/save")
     @ResponseBody
     public String save(PencilPage pencilPage) throws IOException, CloneNotSupportedException, JpegProcessingException {
+        System.out.println(pencilPage);
         pencilService.saveAndCallBack(pencilPage);
         return "success:true";
     }

@@ -41,6 +41,17 @@ public class MessageController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String index(@RequestParam("id")long id, Model model){
+        indexPage(id, model);
+        return "message";
+    }
+
+    @RequestMapping(value = "/web", method = RequestMethod.GET)
+    public String indexWeb(@RequestParam("id")long id, Model model){
+        indexPage(id, model);
+        return "web/message";
+    }
+
+    private void indexPage(long id,Model model){
         List<Message> messages = messageService.findByPencilId(id);
         MessagePage message = new MessagePage();
 //        message.setCreator(getId(SecurityUtils.getSubject().getPrincipal().toString()));
@@ -60,7 +71,6 @@ public class MessageController {
         model.addAttribute("pencilid",id);
         model.addAttribute("messagePage",message);
         model.addAttribute("messagesList",messagepages);
-        return "message";
     }
 
     @RequestMapping("/save")

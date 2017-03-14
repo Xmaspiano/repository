@@ -39,6 +39,17 @@ public class AnswerController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String index(@RequestParam("id")long id, Model model){
+        indexPage(id, model);
+        return "answer";
+    }
+
+    @RequestMapping(value = "/web", method = RequestMethod.GET)
+    public String indexWeb(@RequestParam("id")long id, Model model){
+        indexPage(id, model);
+        return "web/answer";
+    }
+
+    private void indexPage(long id,Model model){
         String loginid = SecurityUtils.getSubject().getPrincipal().toString();
         List<Answer> answers = answerService.findByPencilId(id);
         AnswerPage answer = new AnswerPage();
@@ -76,8 +87,8 @@ public class AnswerController {
         model.addAttribute("pencilid",id);
         model.addAttribute("AnswerPage",answer);
         model.addAttribute("answersList",answerpages);
-        return "answer";
     }
+
 
     @RequestMapping("/save")
     @ResponseBody
